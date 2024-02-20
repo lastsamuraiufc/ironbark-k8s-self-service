@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Namespace Input Form</title>
+</head>
+<body>
+    <form action="/submit" method="post">
+        <!-- Namespace Name -->
+        <label for="namespaceName">Namespace Name:</label>
+        <input type="text" id="namespaceName" name="namespaceName" required>
+
+        <!-- Resource Limits -->
+        <label for="resourceLimits">Resource Limits:</label>
+        <input type="text" id="resourceLimits" name="resourceLimits" required>
+
+        <!-- Resource Requests -->
+        <label for="resourceRequests">Resource Requests:</label>
+        <input type="text" id="resourceRequests" name="resourceRequests" required>
+
+        <!-- Owner Field -->
+        <label for="owner">Owner:</label>
+        <input type="text" id="owner" name="owner" required>
+
+        <!-- Submit Button -->
+        <button type="submit">Submit</button>
+    </form>
+</body>
+</html>
