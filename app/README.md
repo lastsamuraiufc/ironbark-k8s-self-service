@@ -7,7 +7,7 @@
 * sudo apt install libpq-dev -y
 * sudo apt install git -y
 * sudo apt install pipenv -y
-* sudo apt install python3-dev libpq-dev From the ticketlab-frontend directory
+* sudo pip install kubernetes
 * pipenv --python=$(which python3.8) install flask requests Flask-login oauthlib
 * export FLASK_ENV=development
 * export FLASK_APP='.'

@@ -1,9 +1,12 @@
 import os
 
 from flask import Flask, url_for, render_template, jsonify, request, redirect
+import kubernetes.client
+from kubernetes.client.rest import ApiException
 import requests
 import logging
 import json
+from pprint import pprint
 
 def create_app(test_config=None):
     app = Flask(__name__)
@@ -44,19 +47,29 @@ def create_app(test_config=None):
         response_API = requests.get(app.config['API_URL'] + '/api/v1/namespaces')
         data = json.loads(response_API.text)
         metadata = data['items']
-        for key in metadata:
-            print(key, " : ", key['metadata'])
         return render_template('namespaces_index.html', namespaces=metadata)
 
     @app.route('/namespace/create', methods=["POST", "GET"])
     def namespace_add():
         
         if request.method == 'POST':
-            namespace_file = open('namespace.txt', 'w')
-            namespace_file.write(request.form["namespaceName"] + ',' + request.form["resourceLimits"] + ',' + request.form["resourceRequests"] + ',' + request.form["ownerEmail"])
-            namespace_file.close()
+            configuration = kubernetes.client.Configuration()
+            configuration.host = app.config['API_URL']
+            # Enter a context with an instance of the API kubernetes.client
+            with kubernetes.client.ApiClient(configuration) as api_client:
+                # Create an instance of the API class
+                api_instance = kubernetes.client.CoreV1Api(api_client)
+                meta = kubernetes.client.V1ObjectMeta(name=request.form["namespaceName"])
+                print(meta)
+                body = kubernetes.client.V1Namespace(metadata=meta) # V1Namespace | 
 
-        return redirect(url_for('namespaces'))
+                try:
+                    api_response = api_instance.create_namespace(body)
+                    pprint(api_response)
+                except ApiException as e:
+                    print("Exception when calling CoreV1Api->create_namespace: %s\n" % e)
+                return redirect(url_for('namespaces'))
+
+        return render_template('namespaces_add.html')
 
     return app
-    
