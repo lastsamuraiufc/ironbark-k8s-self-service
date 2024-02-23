@@ -13,7 +13,9 @@
 * export FLASK_APP='.'
 
 # Running App
-* from root director run 'pipenv shell'
+* from root directory of app (ironbark-k8s-self-service) run 'pipenv shell'
 * from /app run '. ./env_prep.sh'
+* IF the k8s cluster you are querying is different than http://localhost:8080
+    * run export API_URL=URL of k8s cluster
 * make sure you're in app/frontend/src directory
 * flask run --host=0.0.0.0 --port=3001

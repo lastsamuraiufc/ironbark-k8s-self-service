@@ -1,0 +1,14 @@
+{% extends "layout.html" %}
+{% block title %}
+Namespace
+{% endblock %}
+
+{% block body %}
+<form class="content" method="post" enctype="multipart/form-data" action="{{ url_for('namespace_add') }}">
+    <p><strong>Namespace Name:</strong> <input type="text" name="namespaceName"><br><br></p>
+    <p><strong>Resourche Limits:</strong> <input type="text" name="resourceLimits"><br><br></p>
+    <p><strong>Resource Requests:</strong> <input type="text" name="resourceRequests"><br><br></p>
+    <p><strong>Owner Email:</strong> <input type="text" name="ownerEmail"><br><br> </p>
+    <input name="btn_submit" type="submit" class="btn-info" />
+  </form>
+{% endblock %}

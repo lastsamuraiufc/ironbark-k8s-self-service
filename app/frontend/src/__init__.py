@@ -1,5 +1,9 @@
 import os
-from flask import Flask, url_for, render_template, jsonify, request
+
+from flask import Flask, url_for, render_template, jsonify, request, redirect
+import requests
+import logging
+import json
 
 def create_app(test_config=None):
     app = Flask(__name__)
@@ -32,7 +36,17 @@ def create_app(test_config=None):
     @app.route('/')
     def index():
 
-        return render_template('namespace.html')
+        return render_template('namespaces_index.html')
+
+    @app.route('/namespaces')
+    def namespaces():        
+
+        response_API = requests.get(app.config['API_URL'] + '/api/v1/namespaces')
+        data = json.loads(response_API.text)
+        metadata = data['items']
+        for key in metadata:
+            print(key, " : ", key['metadata'])
+        return render_template('namespaces_index.html', namespaces=metadata)
 
     @app.route('/namespace/create', methods=["POST", "GET"])
     def namespace_add():
@@ -42,6 +56,7 @@ def create_app(test_config=None):
             namespace_file.write(request.form["namespaceName"] + ',' + request.form["resourceLimits"] + ',' + request.form["resourceRequests"] + ',' + request.form["ownerEmail"])
             namespace_file.close()
 
-        return render_template('namespace.html')
+        return redirect(url_for('namespaces'))
 
     return app
+    
