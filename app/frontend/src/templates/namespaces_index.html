@@ -1,0 +1,26 @@
+{% extends "layout.html" %}
+{% block title %}
+Tickets
+<a href="{{ url_for('namespace_add') }}">
+  <button>Add Namespace</button>
+</a>
+<p>{{new_id_header}}</p>
+{% endblock %}
+
+{% block body %}
+<table class="table">
+  <thead>
+    <tr>
+      <th>Name</th>
+    </tr>
+  </thead>
+  <tbody>
+  <!-- EXAMPLE ROW, substitue the real information from the tickets in the database -->
+  {% for namespace in namespaces %}
+    <tr>
+      <th>{{namespace.metadata.name}}</th>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
