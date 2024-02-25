@@ -1,3 +1,7 @@
 Flask==3.0.2
 requests==2.28.1
+<<<<<<< HEAD
 kubernetes==29.0.0
+=======
+kubernetes==29.0.0
+>>>>>>> a05e453d73582ae6b020d2e107ca82ce6f8cdc71
