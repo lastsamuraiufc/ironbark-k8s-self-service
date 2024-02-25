@@ -1,7 +1,8 @@
 import os
 
 from flask import Flask, url_for, render_template, jsonify, request, redirect
-import kubernetes.client
+from kubernetes import config , client
+from kubernetes.client import Configuration
 from kubernetes.client.rest import ApiException
 import requests
 import logging
@@ -17,6 +18,13 @@ def create_app(test_config=None):
     if test_config is None:
         # Load configuration from config.py
         app.config.from_pyfile('config.py', silent=True)
+        try:
+            config.load_kube_config()
+            c = Configuration().get_default_copy()
+        except AttributeError:
+            c = Configuration()
+            c.assert_homename = False
+        Configuration.set_default(c)
     else:
         app.config.from_mapping(test_config)
 
@@ -39,36 +47,37 @@ def create_app(test_config=None):
     @app.route('/')
     def index():
 
-        return render_template('namespaces_index.html')
+        return redirect(url_for('namespaces'))
 
     @app.route('/namespaces')
     def namespaces():        
 
-        response_API = requests.get(app.config['API_URL'] + '/api/v1/namespaces')
-        data = json.loads(response_API.text)
-        metadata = data['items']
-        return render_template('namespaces_index.html', namespaces=metadata)
+        # Enter a context with an instance of the API kubernetes.client
+        api_instance = client.CoreV1Api()
+        try:
+            api_response = api_instance.list_namespace()
+            metadata = api_response.items
+            return render_template('namespaces_index.html', namespaces=metadata)
+        except ApiException as e:
+            print("Exception when calling CoreV1Api->create_namespace: %s\n" % e)
+
+        return redirect(url_for('namespaces'))
+
+
 
     @app.route('/namespace/create', methods=["POST", "GET"])
     def namespace_add():
         
         if request.method == 'POST':
-            configuration = kubernetes.client.Configuration()
-            configuration.host = app.config['API_URL']
             # Enter a context with an instance of the API kubernetes.client
-            with kubernetes.client.ApiClient(configuration) as api_client:
-                # Create an instance of the API class
-                api_instance = kubernetes.client.CoreV1Api(api_client)
-                meta = kubernetes.client.V1ObjectMeta(name=request.form["namespaceName"])
-                print(meta)
-                body = kubernetes.client.V1Namespace(metadata=meta) # V1Namespace | 
-
-                try:
-                    api_response = api_instance.create_namespace(body)
-                    pprint(api_response)
-                except ApiException as e:
-                    print("Exception when calling CoreV1Api->create_namespace: %s\n" % e)
-                return redirect(url_for('namespaces'))
+            api_instance = client.CoreV1Api()
+            try:
+                meta = client.V1ObjectMeta(name=request.form["namespaceName"])
+                body = client.V1Namespace(metadata=meta) # V1Namespace | 
+                api_response = api_instance.create_namespace(body)
+            except ApiException as e:
+                print("Exception when calling CoreV1Api->create_namespace: %s\n" % e)
+            return redirect(url_for('namespaces'))
 
         return render_template('namespaces_add.html')
 
