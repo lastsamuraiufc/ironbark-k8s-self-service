@@ -2,6 +2,15 @@
 build-frontend version="0.1.0-dev":
     docker buildx build -f docker/frontend/Dockerfile -t guzila:{{ version }} .
 
+push-frontend version="0.1.0-dev":
+    docker \
+      buildx \
+      build \
+      --push \
+      -f docker/frontend/Dockerfile \
+      -t 100.76.51.40:30005/ironbark/app/frontend:{{ version }} \
+      .
+
 run-frontend version="0.1.0-dev":
     docker \
       run \
